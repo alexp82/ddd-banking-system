@@ -1,11 +1,9 @@
 package com.keba.scala.bank.services
 
-import java.util.Currency
-
 import com.keba.scala.bank.account.BankAccount
 import com.keba.scala.bank.exceptions.{BankAccountAlreadyExists, BankAccountNotFound, BankAccountOverdraft, NoExchangeRateRegistered}
-import com.keba.scala.bank.money.Money
 import com.keba.scala.bank.repositories.BankAccountRepository
+import com.keba.scala.bank.services.BankingTestConstants._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
@@ -15,25 +13,6 @@ import org.scalatest.{BeforeAndAfterEach, FunSuite}
   */
 @RunWith(classOf[JUnitRunner])
 class BankingServiceTest extends FunSuite with BeforeAndAfterEach {
-  /* Constant(s) */
-  val BANK_ACCOUNT_NUMBER = "123.123"
-  val BANK_ACCOUNT_NUMBER_BAD_FORMAT = "123-123"
-
-  private val CURRENCY_TWD = Currency.getInstance("TWD")
-  private val CURRENCY_SEK = Currency.getInstance("SEK")
-  private val CURRENCY_USD_NOTREGISTERED = Currency.getInstance("USD")
-  private val EXCHANGERATE_SEK_TWD: BigDecimal = 4.0
-  private val EXCHANGERATE_TWD_SEK: BigDecimal = 5.0
-
-  private val MONEY_200_TWD = new Money(200.0, CURRENCY_TWD)
-  private val MONEY_100_3_TWD = new Money(100.3, CURRENCY_TWD)
-  private val MONEY_50_1_TWD = new Money(50.1, CURRENCY_TWD)
-  private val MONEY_50_2_TWD = new Money(50.2, CURRENCY_TWD)
-  private val MONEY_0_TWD = new Money(0.0, CURRENCY_TWD)
-  private val MONEY_10_SEK = new Money(10.0, CURRENCY_SEK)
-  private val MONEY_40_TWD = new Money(40.0, CURRENCY_TWD)
-  private val MONEY_160_TWD = new Money(160.0, CURRENCY_TWD)
-  private val MONEY_10_USD_NOTREGISTERED = new Money(10.0, CURRENCY_USD_NOTREGISTERED)
 
   /* Field(s) */
   protected var bankingService: BankingService = null

@@ -1,8 +1,6 @@
 package com.keba.scala.bank.services
 
-import java.util.Currency
-
-import com.keba.scala.bank.money.Money
+import com.keba.scala.bank.services.BankingTestConstants._
 import org.junit.runner.RunWith
 import org.scalatest.junit.JUnitRunner
 import org.scalatest.{BeforeAndAfterEach, FunSuite}
@@ -13,13 +11,6 @@ import org.scalatest.{BeforeAndAfterEach, FunSuite}
   */
 @RunWith(classOf[JUnitRunner])
 class ExchangeRateServiceTest extends FunSuite with BeforeAndAfterEach {
-  /* Constants */
-  private val CURRENCY_TWD = Currency.getInstance("TWD")
-  private val CURRENCY_SEK = Currency.getInstance("SEK")
-  private val EXCHANGERATE_SEK_TWD: BigDecimal = 4.0
-  private val EXCHANGERATE_TWD_SEK: BigDecimal = 0.2
-  private val MONEY_10_SEK = new Money(10.0, CURRENCY_SEK)
-  private val MONEY_40_TWD = new Money(40.0, CURRENCY_TWD)
   /* Field(s): */
   private var exchangeRateService: ExchangeRateService = null
 
@@ -68,7 +59,7 @@ class ExchangeRateServiceTest extends FunSuite with BeforeAndAfterEach {
     var theExchangedSekMoneyOption = exchangeRateService.exchange(MONEY_40_TWD, CURRENCY_SEK)
     assert(theExchangedSekMoneyOption.isDefined)
     val theExchangedSekMoney = theExchangedSekMoneyOption.get
-    assert(theExchangedSekMoney.amount == 8.0)
+    assert(theExchangedSekMoney.amount == 200.0)
     assert(theExchangedSekMoney.currency == CURRENCY_SEK)
     /* Attempt exchange from SEK to TWD. Should fail. */
     theExchangedSekMoneyOption = exchangeRateService.exchange(MONEY_10_SEK, CURRENCY_TWD)
@@ -87,7 +78,7 @@ class ExchangeRateServiceTest extends FunSuite with BeforeAndAfterEach {
     val theExchangedSekMoneyOption = exchangeRateService.exchange(MONEY_40_TWD, CURRENCY_SEK)
     assert(theExchangedSekMoneyOption.isDefined)
     val theExchangedSekMoney = theExchangedSekMoneyOption.get
-    assert(theExchangedSekMoney.amount == 8.0)
+    assert(theExchangedSekMoney.amount == 200.0)
     assert(theExchangedSekMoney.currency == CURRENCY_SEK)
     /*
      * Exchange from SEK to TWD.
@@ -97,7 +88,7 @@ class ExchangeRateServiceTest extends FunSuite with BeforeAndAfterEach {
     val theExchangedTwdMoneyOption = exchangeRateService.exchange(theExchangedSekMoney, CURRENCY_TWD)
     assert(theExchangedTwdMoneyOption.isDefined)
     val theExchangedTwdMoney = theExchangedTwdMoneyOption.get
-    assert(theExchangedTwdMoney.amount == 32.0)
+    assert(theExchangedTwdMoney.amount == 800.0)
     assert(theExchangedTwdMoney.currency == CURRENCY_TWD)
   }
 

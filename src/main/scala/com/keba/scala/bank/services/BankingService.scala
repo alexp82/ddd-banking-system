@@ -79,25 +79,6 @@ class BankingService extends BankingServiceMixinInterface {
   }
 
   /**
-    * Retrieves bank account with supplied account number from
-    * the bank account repository.
-    * This method isolates access to the bank account repository in
-    * order to enable us to add error handling, exception translation,
-    * logging etc. of access to a repository.
-    * Note that we assume only a scenario in which access to the
-    * repository is successful.
-    *
-    * @param inBankAccountNumber Account number of bank account
-    *                            to retrieve.
-    * @return Option holding bank account with supplied account number,
-    *         or None if no bank account was found.
-    */
-  protected def retrieveBankAccount(inBankAccountNumber: String): Option[BankAccount] = {
-    val theBankAccountOption = BankAccountRepository.findBankAccountWithAccountNumber(inBankAccountNumber)
-    theBankAccountOption
-  }
-
-  /**
     * * Validates the format of the account number of the supplied
     * bank account. If it is not in the appropriate format, throw
     * an exception.
@@ -156,44 +137,22 @@ class BankingService extends BankingServiceMixinInterface {
   }
 
   /**
-    * Withdraws the supplied amount of money from the bank account with
-    * the supplied account number.
+    * Retrieves bank account with supplied account number from
+    * the bank account repository.
+    * This method isolates access to the bank account repository in
+    * order to enable us to add error handling, exception translation,
+    * logging etc. of access to a repository.
+    * Note that we assume only a scenario in which access to the
+    * repository is successful.
     *
-    * @param inBankAccountNumber Account number of bank account from
-    *                            which to withdraw money.
-    * @param inAmount            Amount of money to withdraw from the account.
-    * @throws IllegalArgumentException If the supplied account number
-    *                                  is not in a valid format.
-    * @throws BankAccountNotFound      If there is no corresponding bank
-    *                                  account for the supplied bank account number.
-    * @throws BankAccountOverdraft     If an attempt was made to overdraft
-    *                                  the bank account.
+    * @param inBankAccountNumber Account number of bank account
+    *                            to retrieve.
+    * @return Option holding bank account with supplied account number,
+    *         or None if no bank account was found.
     */
-  def withdraw(inBankAccountNumber: String, inAmount: Money): Unit = {
-    /*
-     * This is a command-type method, so we do not return a result.
-     * The method has side-effects in that the balance of a
-     * bank account is updated.
-     */
-    /* Retrieve bank account with supplied account number. */
-    val theBankAccountOption = retrieveBankAccount(inBankAccountNumber)
-    val theBankAccount = theBankAccountOption.get
-    /*
-     * Exchange the currency to withdraw to the currency of
-     * the bank account. The exchange rate service will do nothing if
-     * the supplied amount is of the desired currency, so it is
-     * safe to always perform the exchange operation.
-     */
-    val theExchangedAmountToWithdrawOption = exchangeMoney(inAmount,
-      theBankAccount.currency)
-    val theExchangedAmountToWithdraw = theExchangedAmountToWithdrawOption.get
-    /*
-     * Arriving here, we know that we have a bank account,
-     * money to withdraw in the bank account's currency and can
-     * now perform the withdrawal and update the bank account.
-     */
-    theBankAccount.withdraw(theExchangedAmountToWithdraw)
-    updateBankAccount(theBankAccount)
+  protected def retrieveBankAccount(inBankAccountNumber: String): Option[BankAccount] = {
+    val theBankAccountOption = BankAccountRepository.findBankAccountWithAccountNumber(inBankAccountNumber)
+    theBankAccountOption
   }
 
   /**
@@ -225,6 +184,46 @@ class BankingService extends BankingServiceMixinInterface {
   protected def exchangeMoney(inAmount: Money, inToCurrency: Currency): Option[Money] = {
     val theExchangedMoneyOption = exchangeRateService.exchange(inAmount, inToCurrency)
     theExchangedMoneyOption
+  }
+
+  /**
+    * Withdraws the supplied amount of money from the bank account with
+    * the supplied account number.
+    *
+    * @param inBankAccountNumber Account number of bank account from
+    *                            which to withdraw money.
+    * @param inAmount            Amount of money to withdraw from the account.
+    * @throws IllegalArgumentException If the supplied account number
+    *                                  is not in a valid format.
+    * @throws BankAccountNotFound      If there is no corresponding bank
+    *                                  account for the supplied bank account number.
+    * @throws BankAccountOverdraft     If an attempt was made to overdraft
+    *                                  the bank account.
+    */
+  def withdraw(inBankAccountNumber: String, inAmount: Money): Unit = {
+    /*
+     * This is a command-type method, so we do not return a result.
+     * The method has side-effects in that the balance of a
+     * bank account is updated.
+     */
+    /* Retrieve bank account with supplied account number. */
+    val theBankAccountOption = retrieveBankAccount(inBankAccountNumber)
+    val theBankAccount = theBankAccountOption.get
+    /*
+     * Exchange the currency to withdraw to the currency of
+     * the bank account. The exchange rate service will do nothing if
+     * the supplied amount is of the desired currency, so it is
+     * safe to always perform the exchange operation.
+     */
+    val theExchangedAmountToWithdrawOption = exchangeMoney(inAmount, theBankAccount.currency)
+    val theExchangedAmountToWithdraw = theExchangedAmountToWithdrawOption.get
+    /*
+     * Arriving here, we know that we have a bank account,
+     * money to withdraw in the bank account's currency and can
+     * now perform the withdrawal and update the bank account.
+     */
+    theBankAccount.withdraw(theExchangedAmountToWithdraw)
+    updateBankAccount(theBankAccount)
   }
 
 }
